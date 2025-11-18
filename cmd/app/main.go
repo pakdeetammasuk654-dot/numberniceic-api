@@ -77,6 +77,8 @@ func main() {
 		Views: engine, // ใช้ engine ที่เราเพิ่งสร้าง
 	})
 
+	app.Static("/public", "./public")
+
 	// ------------------------------------
 	// Hexagonal Wiring (จากขั้นตอนก่อนหน้า)
 	// ...
