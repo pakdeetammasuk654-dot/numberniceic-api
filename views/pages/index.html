@@ -1,0 +1,14 @@
+{{template "main" .}}
+
+{{define "body"}}
+    <h1>ยินดีต้อนรับสู่ NumberNiceIC!</h1>
+    <p>Landing Page นี้แสดงความสามารถของ Fiber ในการใช้ Go HTML Template โดยแยกส่วนประกอบเป็น Layout และ Partial ได้อย่างสมบูรณ์</p>
+
+    <h2>โครงสร้างที่ใช้</h2>
+    <ul>
+        <li>**Layout:** `layouts/main.html`</li>
+        <li>**Partial (ส่วนย่อย):** `partials/header.html` และ `partials/footer.html`</li>
+        <li>**Content:** `pages/index.html`</li>
+    </ul>
+    <p>คุณสามารถเพิ่ม CSS Framework เช่น Tailwind หรือ Bootstrap ได้อย่างง่ายดายเพื่อความสวยงามยิ่งขึ้น</p>
+{{end}}

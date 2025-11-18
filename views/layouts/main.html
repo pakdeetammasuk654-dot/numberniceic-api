@@ -1,0 +1,23 @@
+{{define "main"}}
+    <!DOCTYPE html>
+    <html lang="th">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{.Title}}</title>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 70px; }
+            .content { padding: 30px; max-width: 1200px; margin: 0 auto; }
+        </style>
+    </head>
+    <body>
+    {{template "header"}}
+
+    <div class="content">
+        {{template "body" .}}
+    </div>
+
+    {{template "footer"}}
+    </body>
+    </html>
+{{end}}

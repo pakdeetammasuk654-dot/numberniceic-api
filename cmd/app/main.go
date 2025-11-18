@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/pakdeetammasuk654-dot/numberniceic-api/internal/core/services"
@@ -55,38 +56,45 @@ func initDB() *sql.DB {
 func main() {
 	// Initialize Database Connection
 	db := initDB()
-	defer db.Close() // ปิด Connection เมื่อโปรแกรมหยุดทำงาน
+	defer db.Close()
 
 	// ------------------------------------
-	// Hexagonal Wiring (การประกอบร่าง)
+	// Template Engine Setup (ใหม่)
 	// ------------------------------------
+	// 1. Initialize HTML template engine: ระบุโฟลเดอร์ views และนามสกุล .html
+	engine := html.New("./views", ".html")
 
-	// 1. Repository Adapter (Output Adapter - เชื่อม DB)
+	// 2. ตั้งค่า Fiber ให้ใช้ View Engine
+	app := fiber.New(fiber.Config{
+		Views: engine, // ใช้ engine ที่เราเพิ่งสร้าง
+	})
+
+	// ------------------------------------
+	// Hexagonal Wiring (จากขั้นตอนก่อนหน้า)
+	// ------------------------------------
 	satNumRepo := repositories.NewSatNumRepoPostgres(db)
-
-	// 2. Core Service (Core Logic - Inject Repository Port)
 	satNumService := services.NewSatNumService(satNumRepo)
-
-	// 3. Handler Adapter (Input Adapter - เชื่อม Fiber)
 	satNumHandler := handlers.NewSatNumHandler(satNumService)
 
 	// ------------------------------------
-	// Fiber Setup and Routes
+	// Fiber Routes
 	// ------------------------------------
-	app := fiber.New()
 
-	// 0. Base Route (จากโค้ดเดิม)
+	// 1. Landing Page Route (หน้าแรก)
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, NumberNiceIC API is running!")
+		// c.Render(path_to_template, data, layout_name)
+		return c.Render("pages/index", fiber.Map{
+			"Title": "หน้าแรก - NumberNiceIC",
+		}, "layouts/main") // ไฟล์ layout ที่ใช้
 	})
 
-	// 4. Grouping API Routes (แนะนำให้ใช้ versioning)
+	// 2. API Routes (ย้าย API เดิมไปไว้ใน /api/v1)
 	v1 := app.Group("/api/v1")
 	satNumGroup := v1.Group("/sat-nums")
 
 	// Endpoints สำหรับ SatNum
-	satNumGroup.Get("/", satNumHandler.GetAllSatNums)          // GET /api/v1/sat-nums
-	satNumGroup.Get("/:key", satNumHandler.GetSatNumByCharKey) // GET /api/v1/sat-nums/:key
+	satNumGroup.Get("/", satNumHandler.GetAllSatNums)
+	satNumGroup.Get("/:key", satNumHandler.GetSatNumByCharKey)
 
 	// Start Server
 	log.Fatal(app.Listen(":3000"))
