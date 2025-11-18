@@ -1,36 +1,6 @@
-# ========================
-# 1. Compiled Output and Cache
-# ========================
-# Compiled Go programs (Executables)
-*.exe
-*.dll
-*.so
-# Output of 'go build' or 'go test'
-*
-# Go build cache
-/pkg/
-# Compiled test files
-*.test
-*.out
-# Dependencies (if vendor mode is used, which is rare now)
-/vendor/
-# Dependencies cache
-/bin/
-
-# ========================
-# 2. Configuration and Secrets
-# ========================
-# Environment variables (CRUCIAL for Database credentials/API keys)
 .env
 .env.*
-# Log files
-*.log
 
-# ========================
-# 3. IDE/Editor Specific Files
-# ========================
-# GoLand/IntelliJ settings directory
-# (คุณมีไฟล์ .gitignore ใน .idea อยู่แล้ว แต่การ ignore ทั้งโฟลเดอร์ใน root ก็ปลอดภัยกว่า)
 .idea/
 # VS Code settings
 .vscode/
