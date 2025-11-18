@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/template/html/v2"
+	"github.com/gofiber/template/html/v2" // Dependency สำหรับ Template Engine
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/pakdeetammasuk654-dot/numberniceic-api/internal/core/services"
@@ -16,7 +16,10 @@ import (
 )
 
 // initDB เชื่อมต่อกับ PostgreSQL โดยใช้ Environment Variables
+// (โค้ดส่วนนี้ยังคงเดิม)
 func initDB() *sql.DB {
+	// ... (โค้ด initDB เดิม) ...
+
 	// 1. Load Environment Variables (จากไฟล์ .env)
 	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
@@ -59,10 +62,15 @@ func main() {
 	defer db.Close()
 
 	// ------------------------------------
-	// Template Engine Setup (ใหม่)
+	// Template Engine Setup (แก้ไข)
 	// ------------------------------------
 	// 1. Initialize HTML template engine: ระบุโฟลเดอร์ views และนามสกุล .html
 	engine := html.New("./views", ".html")
+
+	// **NEW: บังคับโหลดและ Parse Template ทั้งหมด**
+	if err := engine.Load(); err != nil {
+		log.Fatalf("Error loading templates: %v", err)
+	}
 
 	// 2. ตั้งค่า Fiber ให้ใช้ View Engine
 	app := fiber.New(fiber.Config{
@@ -71,7 +79,7 @@ func main() {
 
 	// ------------------------------------
 	// Hexagonal Wiring (จากขั้นตอนก่อนหน้า)
-	// ------------------------------------
+	// ...
 	satNumRepo := repositories.NewSatNumRepoPostgres(db)
 	satNumService := services.NewSatNumService(satNumRepo)
 	satNumHandler := handlers.NewSatNumHandler(satNumService)
@@ -82,13 +90,13 @@ func main() {
 
 	// 1. Landing Page Route (หน้าแรก)
 	app.Get("/", func(c *fiber.Ctx) error {
-		// c.Render(path_to_template, data, layout_name)
+		// c.Render(ชื่อไฟล์ Template, data, ชื่อบล็อก Layout)
 		return c.Render("pages/index", fiber.Map{
 			"Title": "หน้าแรก - NumberNiceIC",
-		}, "layouts/main") // ไฟล์ layout ที่ใช้
+		}, "main") // <--- เปลี่ยน Layout Name ให้ตรงกับ {{define "main"}} ใน main.html
 	})
 
-	// 2. API Routes (ย้าย API เดิมไปไว้ใน /api/v1)
+	// 2. API Routes
 	v1 := app.Group("/api/v1")
 	satNumGroup := v1.Group("/sat-nums")
 
